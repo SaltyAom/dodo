@@ -39,7 +39,7 @@ class Landing extends HookWidget {
     }, []);
 
     return DrawerLayout(
-      Scaffold(
+      child: Scaffold(
         appBar: AppBar(
           title: Text("Dodo"),
           leading: DrawerToggler(),

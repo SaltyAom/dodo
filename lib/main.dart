@@ -1,10 +1,11 @@
-import 'package:dodo/navigator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'bloc/bloc.dart';
+
+import 'navigator.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -23,6 +24,9 @@ void main() async {
         ),
         BlocProvider<NavigatorBloc>(
           create: (context) => NavigatorBloc(),
+        ),
+        BlocProvider<SettingsBloc>(
+          create: (context) => SettingsBloc(),
         ),
       ],
     ),

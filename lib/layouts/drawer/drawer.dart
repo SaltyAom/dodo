@@ -18,15 +18,19 @@ export 'components/drawerToggler.dart';
 
 class DrawerLayout extends HookWidget {
   final Widget child;
+  final bool enabled;
 
-  const DrawerLayout(
-    this.child, {
+  const DrawerLayout({
     Key? key,
+    required this.child,
+    this.enabled = true,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     final draggablePane = useDraggablePane(context);
+
+    if (!enabled) return child;
 
     final draggable = draggablePane.draggable;
 
