@@ -1,14 +1,13 @@
 import 'models.dart';
 
-// ---
+// * All Pages ---
 enum SettingsPageKey {
   Overview,
   General,
   Account,
 }
-// ---
 
-// ---
+// ? Overview Page ---
 enum OverviewGroupKey {
   Common,
 }
@@ -17,9 +16,8 @@ enum OverviewCommonKey {
   General,
   Account,
 }
-// ---
 
-// ---
+// ? General Page ---
 enum GeneralGroupKey {
   Appearance,
   System,
@@ -33,9 +31,8 @@ enum GeneralAppearanceItemKey {
 enum GeneralSystemItemKey {
   Test,
 }
-// ---
 
-// ---
+// ? Account Page ---
 enum AccountGroupKey {
   Profile,
   Connection,
@@ -49,7 +46,19 @@ enum AccountConnectionItemKey {
   Email,
   Twitter,
 }
-// ---
+
+const List<SettingReference> settingsToPersists = [
+  SettingReference(
+    page: SettingsPageKey.General,
+    group: GeneralGroupKey.Appearance,
+    setting: GeneralAppearanceItemKey.Adaptive,
+  ),
+  SettingReference(
+    page: SettingsPageKey.General,
+    group: GeneralGroupKey.System,
+    setting: GeneralSystemItemKey.Test,
+  ),
+];
 
 const settings = SettingsModel({
   SettingsPageKey.Overview: SettingPageDetail<OverviewGroupKey>(
@@ -79,21 +88,17 @@ const settings = SettingsModel({
         settings: {
           GeneralAppearanceItemKey.Adaptive: SettingItemBoolean(
             title: "Use Adaptive Theme",
-            subtitle: "Follow theme device's theme mode setting",
-            value: false,
-          ),
-          GeneralAppearanceItemKey.Test: SettingItemBoolean(
-            title: "Test",
-            value: false,
+            subtitle: "Follow device's theme",
+            value: true,
           ),
         },
       ),
       GeneralGroupKey.System: SettingGroup<GeneralSystemItemKey>(
-        title: "Test",
+        title: "Extra Field",
         settings: {
-          GeneralSystemItemKey.Test: SettingItemBoolean(
-            title: "Test",
-            value: false,
+          GeneralSystemItemKey.Test: SettingItemString(
+            title: "Test String",
+            value: "String",
           ),
         },
       ),

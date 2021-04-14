@@ -31,13 +31,14 @@ class SettingSwitch extends StatelessWidget {
       title: SettingItemTitle(setting.title),
       subtitle: SettingItemSubtitle(setting.subtitle),
       value: setting.value,
-      dense: true,
       onChanged: (value) {
         settingBloc.add(
           SettingBooleanUpdate(
-            page: pageKey,
-            group: groupKey,
-            setting: settingKey,
+            reference: SettingReference(
+              page: pageKey,
+              group: groupKey,
+              setting: settingKey,
+            ),
             newValue: value,
           ),
         );

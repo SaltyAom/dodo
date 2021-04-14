@@ -2,44 +2,40 @@ import 'package:flutter/material.dart';
 
 import 'package:equatable/equatable.dart';
 
-import 'constants.dart';
+import 'models.dart';
 
 abstract class SettingsEvent extends Equatable {}
 
 @immutable
 class SettingBooleanUpdate extends SettingsEvent {
-  final SettingsPageKey page;
-  final group;
-  final setting;
+  final SettingReference reference;
+  final bool shouldPersists;
 
   final bool newValue;
 
   SettingBooleanUpdate({
-    required this.page,
-    required this.group,
-    required this.setting,
+    required this.reference,
     required this.newValue,
+    this.shouldPersists = true,
   });
 
   @override
-  get props => [page, group, setting];
+  get props => [reference.page, reference.group, reference.setting, newValue];
 }
 
 @immutable
 class SettingStringUpdate extends SettingsEvent {
-  final SettingsPageKey page;
-  final group;
-  final setting;
+  final SettingReference reference;
+  final bool shouldPersists;
 
   final String newValue;
 
   SettingStringUpdate({
-    required this.page,
-    required this.group,
-    required this.setting,
+    required this.reference,
     required this.newValue,
+    this.shouldPersists = true,
   });
 
   @override
-  get props => [page, group, setting];
+  get props => [reference.page, reference.group, reference.setting, newValue];
 }

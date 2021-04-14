@@ -40,9 +40,11 @@ class SettingTextFieldDialog extends HookWidget {
       onWillPop: () async {
         settingBloc.add(
           SettingStringUpdate(
-            page: pageKey,
-            group: groupKey,
-            setting: settingKey,
+            reference: SettingReference(
+              page: pageKey,
+              group: groupKey,
+              setting: settingKey,
+            ),
             newValue: controller.text,
           ),
         );
@@ -50,8 +52,11 @@ class SettingTextFieldDialog extends HookWidget {
         return true;
       },
       child: Scaffold(
+        backgroundColor:
+            isDarkTheme ? theme.scaffoldBackgroundColor : Colors.grey.shade100,
         appBar: AppBar(
           title: Text(setting.title),
+          backgroundColor: theme.scaffoldBackgroundColor,
           actions: [
             NikuButton(
               Text("Reset"),
@@ -90,7 +95,8 @@ class SettingTextFieldDialog extends HookWidget {
                 isDarkTheme
                     ? Colors.black.withOpacity(.2)
                     : theme.scaffoldBackgroundColor,
-              ),
+              )
+              ..mt(8),
       ),
     );
   }

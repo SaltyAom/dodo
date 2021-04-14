@@ -5,6 +5,24 @@ import 'package:equatable/equatable.dart';
 import 'constants.dart';
 
 @immutable
+class SettingReference extends Equatable {
+  final SettingsPageKey page;
+  final group;
+  final setting;
+
+  const SettingReference({
+    required this.page,
+    required this.group,
+    required this.setting,
+  });
+
+  String get key => "$page-$group-$setting";
+
+  @override
+  get props => [key];
+}
+
+@immutable
 class SettingItem extends Equatable {
   final String title;
   final String? subtitle;

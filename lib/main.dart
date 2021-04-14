@@ -1,7 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+import 'package:flutter_hooks/flutter_hooks.dart';
+
 import 'package:flutter_bloc/flutter_bloc.dart';
+
+import 'package:hive/hive.dart';
+import 'package:hive_flutter/hive_flutter.dart';
+
+import 'package:dodo/models/persists/settings.dart';
 
 import 'bloc/bloc.dart';
 
@@ -11,6 +18,10 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
+
+  await Hive.initFlutter();
+
+  Hive.registerAdapter(PersistedSettingAdapter());
 
   runApp(
     MultiBlocProvider(
@@ -65,7 +76,7 @@ const MaterialColor primaryWhite = const MaterialColor(
   },
 );
 
-class Dodo extends StatelessWidget {
+class Dodo extends HookWidget {
   const Dodo();
 
   static const Color darkThemeBackground = Color.fromRGBO(48, 48, 48, 1);
@@ -73,6 +84,47 @@ class Dodo extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final navigatorBloc = context.read<NavigatorBloc>();
+    final settingsBloc = context.read<SettingsBloc>();
+
+    useEffect(() {
+      final getPersists = () async {
+        final settings = await Hive.openBox<PersistedSetting>("settings");
+
+        settingsToPersists.forEach((reference) {
+          final persisted = settings.get(reference.key);
+
+          if (persisted == null || persisted.value == null) return;
+
+          if (persisted.value is bool)
+            settingsBloc.add(
+              SettingBooleanUpdate(
+                reference: SettingReference(
+                  page: reference.page,
+                  group: reference.group,
+                  setting: reference.setting,
+                ),
+                newValue: persisted.value as bool,
+                shouldPersists: false,
+              ),
+            );
+
+          if (persisted.value is String)
+            settingsBloc.add(
+              SettingStringUpdate(
+                reference: SettingReference(
+                  page: reference.page,
+                  group: reference.group,
+                  setting: reference.setting,
+                ),
+                newValue: persisted.value as String,
+                shouldPersists: false,
+              ),
+            );
+        });
+      };
+
+      getPersists();
+    }, []);
 
     return MaterialApp.router(
       title: 'Dodo',
@@ -137,7 +189,7 @@ class Dodo extends StatelessWidget {
         ),
         switchTheme: SwitchThemeData(
           trackColor: MaterialStateProperty.resolveWith(
-            (states) => Colors.grey.shade400,
+            (states) => Colors.grey.shade300,
           ),
           thumbColor: MaterialStateProperty.resolveWith(
             (states) => Colors.grey.shade700,
@@ -209,7 +261,7 @@ class Dodo extends StatelessWidget {
             (states) => Colors.grey.shade700,
           ),
           thumbColor: MaterialStateProperty.resolveWith(
-            (states) => Colors.grey.shade400,
+            (states) => Colors.grey.shade300,
           ),
         ),
         indicatorColor: Colors.white,

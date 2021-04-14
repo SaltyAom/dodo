@@ -1,5 +1,9 @@
 import "package:flutter_bloc/flutter_bloc.dart";
 
+import 'package:hive/hive.dart';
+
+import 'package:dodo/models/persists/settings.dart';
+
 import 'models.dart';
 import 'events.dart';
 import 'constants.dart';
@@ -14,23 +18,25 @@ class SettingsBloc extends Bloc<SettingsEvent, SettingsModel> {
   @override
   mapEventToState(event) async* {
     if (event is SettingBooleanUpdate) {
-      final page = state.pages[event.page]!;
-      final group = page.groups[event.group]!;
-      final setting = group.settings[event.setting]!;
+      final reference = event.reference;
+
+      final page = state.pages[reference.page]!;
+      final group = page.groups[reference.group]!;
+      final setting = group.settings[reference.setting]!;
 
       yield SettingsModel({
         ...state.pages,
-        event.page: SettingPageDetail(
+        reference.page: SettingPageDetail(
           title: page.title,
           detail: page.detail,
           groups: {
             ...page.groups,
-            event.group: SettingGroup(
+            reference.group: SettingGroup(
               title: group.title,
               detail: group.detail,
               settings: {
                 ...group.settings,
-                event.setting: SettingItemBoolean(
+                reference.setting: SettingItemBoolean(
                   title: setting.title,
                   subtitle: setting.subtitle,
                   value: event.newValue,
@@ -40,24 +46,35 @@ class SettingsBloc extends Bloc<SettingsEvent, SettingsModel> {
           },
         ),
       });
+
+      if (event.shouldPersists && settingsToPersists.contains(reference)) {
+        final settings = await Hive.openBox<PersistedSetting>("settings");
+
+        settings.put(
+          reference.key,
+          PersistedSetting(event.newValue),
+        );
+      }
     } else if (event is SettingStringUpdate) {
-      final page = state.pages[event.page]!;
-      final group = page.groups[event.group]!;
-      final setting = group.settings[event.setting]!;
+      final reference = event.reference;
+
+      final page = state.pages[reference.page]!;
+      final group = page.groups[reference.group]!;
+      final setting = group.settings[reference.setting]!;
 
       yield SettingsModel({
         ...state.pages,
-        event.page: SettingPageDetail(
+        reference.page: SettingPageDetail(
           title: page.title,
           detail: page.detail,
           groups: {
             ...page.groups,
-            event.group: SettingGroup(
+            reference.group: SettingGroup(
               title: group.title,
               detail: group.detail,
               settings: {
                 ...group.settings,
-                event.setting: SettingItemString(
+                reference.setting: SettingItemString(
                   title: setting.title,
                   subtitle: setting.subtitle,
                   value: event.newValue,
@@ -67,6 +84,15 @@ class SettingsBloc extends Bloc<SettingsEvent, SettingsModel> {
           },
         ),
       });
+
+      if (event.shouldPersists && settingsToPersists.contains(reference)) {
+        final settings = await Hive.openBox<PersistedSetting>("settings");
+
+        settings.put(
+          reference.key,
+          PersistedSetting(event.newValue),
+        );
+      }
     }
   }
 }
