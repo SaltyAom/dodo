@@ -33,8 +33,7 @@ class ArticleGroup {
     this.error = false,
     this.errorMessage,
     this.articles,
-  })  : assert(!error && errorMessage == null),
-        assert(!isLoaded || (isLoaded && articles != null));
+  });
 }
 
 const defaultArticleValue = const ArticleGroup();
@@ -65,4 +64,13 @@ class ArticleMetadata {
     required this.author,
     required this.image,
   });
+
+  factory ArticleMetadata.fromJson(Map<String, dynamic> json) {
+    return ArticleMetadata(
+      title: json['title'] ?? "",
+      date: "4/4/2021",
+      author: json['author'] ?? "",
+      image: json['image'] ?? "",
+    );
+  }
 }

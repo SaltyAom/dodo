@@ -44,7 +44,6 @@ class DrawerLayout extends HookWidget {
         ..fullSize()
         ..builder(
           pageTransformEffect(
-            context,
             draggablePane,
             scale: .95,
             offset: 20,
@@ -55,7 +54,6 @@ class DrawerLayout extends HookWidget {
       child.niku()
         ..builder(
           pageTransformEffect(
-            context,
             draggablePane,
             rotationDegree: 5,
           ),

@@ -1,3 +1,4 @@
+import 'package:dodo/components/atoms/retry.dart';
 import 'package:flutter/material.dart';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -23,14 +24,9 @@ class ArticleOverview extends StatelessWidget {
     if (!articleGroup.isLoaded)
       return CircularProgressIndicator().niku()..center();
 
-    if (articleGroup.error)
-      return Text(articleGroup.errorMessage!).niku()..center();
-
     final articleBloc = context.read<ArticleBloc>();
 
-    final articles = articleGroup.articles!;
-
-    final pullToRefresh = () async {
+    final refresh = () async {
       articleBloc.add(
         ArticleFetchHeadline(
           headline: headline,
@@ -38,6 +34,17 @@ class ArticleOverview extends StatelessWidget {
         ),
       );
     };
+
+    if (articleGroup.error)
+      return NikuColumn([
+        NikuText(articleGroup.errorMessage!)
+          ..fontSize(18)
+          ..center(),
+        RetryButton(onPressed: refresh),
+      ]).mainCenter().niku()
+        ..px(20);
+
+    final articles = articleGroup.articles!;
 
     return RefreshIndicator(
       child: NikuColumn([
@@ -63,7 +70,7 @@ class ArticleOverview extends StatelessWidget {
         ..px(16)
         ..scrollable(),
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-      onRefresh: pullToRefresh,
+      onRefresh: refresh,
     );
   }
 }

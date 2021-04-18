@@ -1,4 +1,8 @@
+import 'package:dodo/components/atoms/retry.dart';
+import 'package:dodo/graphql/modules/modules.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_markdown/flutter_markdown.dart';
+import 'package:graphql_flutter/graphql_flutter.dart';
 
 import 'package:niku/niku.dart';
 
@@ -28,6 +32,37 @@ class ArticlePage extends StatelessWidget {
           style: textTheme.headline6,
         ),
         ArticleImage(article.image).niku().my(16),
+        Query(
+          options: QueryOptions(
+            document: gql(getArticleData),
+            variables: {
+              "title": article.title,
+            },
+          ),
+          builder: (result, {refetch, fetchMore}) {
+            if (result.hasException)
+              return NikuColumn([
+                Text(result.exception.toString()),
+                RetryButton(
+                  onPressed: refetch!,
+                ),
+              ]);
+
+            if (result.isLoading)
+              return CircularProgressIndicator().niku()
+                ..center()
+                ..mt(80);
+
+            final pageData = result.data!['searchArticle'][0]['data'];
+
+            if (pageData == null) return Text("Something went wrong");
+
+            return MarkdownBody(
+              data: pageData,
+              shrinkWrap: true,
+            );
+          },
+        ),
       ]).stretch().niku()
         ..scrollable()
         ..px(16),

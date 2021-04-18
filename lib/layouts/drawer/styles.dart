@@ -22,27 +22,45 @@ typedef PageTransformEffect = Niku Function(Widget) Function(
   double colorIntense,
 });
 
-final PageTransformEffect pageTransformEffect = (
-  BuildContext context,
-  DraggablePane draggablePane, {
-  double shadowOpacity = .125,
-  double scale = 1,
-  double offset = 0,
-  double rotationDegree = 0,
-  double colorIntense = .0875,
-}) =>
-    (Widget child) {
-      final draggable = draggablePane.draggable;
-      final dragController = draggablePane.dragController;
-      final getProgress = draggablePane.getProgress;
+class _PageTransformEffect extends StatelessWidget {
+  final Widget child;
+  final DraggablePane draggablePane;
+  final double shadowOpacity;
+  final double scale;
+  final double offset;
+  final double rotationDegree;
+  final double colorIntense;
 
-      final theme = Theme.of(context);
-      final isDarkTheme = theme.brightness == Brightness.dark;
+  const _PageTransformEffect(
+    this.child,
+    this.draggablePane, {
+    this.shadowOpacity = .125,
+    this.scale = 1,
+    this.offset = 0,
+    this.rotationDegree = 0,
+    this.colorIntense = .0875,
+  });
 
-      return child.niku()
-        ..animated(dragController, (context, child) {
+  @override
+  Widget build(BuildContext context) {
+    final draggable = draggablePane.draggable;
+    final dragController = draggablePane.dragController;
+    final getProgress = draggablePane.getProgress;
+
+    final theme = Theme.of(context);
+    final isDarkTheme = theme.brightness == Brightness.dark;
+
+    final overlay = (Widget child) =>
+        child.niku()..builder(drawerPageOverlay)..builder(draggable);
+
+    return child.niku()
+      ..animated(
+        dragController,
+        (context, child) {
           final value = dragController.value;
           final progress = getProgress(value);
+
+          final scaling = 1 - progress * .2;
 
           return child.niku()
             ..builder((child) {
@@ -73,17 +91,8 @@ final PageTransformEffect pageTransformEffect = (
                 spreadRadius: progress * 6,
                 blurRadius: progress * 52,
               ),
-            ]);
-        })
-        ..builder(drawerPageOverlay)
-        ..builder(draggable)
-        ..animated(dragController, (context, child) {
-          final value = dragController.value;
-          final progress = getProgress(value);
-
-          final scaling = 1 - progress * .2;
-
-          return child.niku()
+            ])
+            ..builder(overlay)
             ..transform(Matrix4.identity()..leftTranslate(value))
             ..builder(
               (child) => Transform.scale(
@@ -106,5 +115,25 @@ final PageTransformEffect pageTransformEffect = (
                       angle: progress * (Math.pi / 180 * rotationDegree),
                     ),
             );
-        });
-    };
+        },
+      );
+  }
+}
+
+final pageTransformEffect = (
+  DraggablePane draggablePane, {
+  double shadowOpacity = .125,
+  double scale = 1,
+  double offset = 0,
+  double rotationDegree = 0,
+  double colorIntense = .0875,
+}) =>
+    (Widget child) => _PageTransformEffect(
+          child,
+          draggablePane,
+          shadowOpacity: shadowOpacity,
+          scale: scale,
+          offset: offset,
+          rotationDegree: rotationDegree,
+          colorIntense: colorIntense,
+        );

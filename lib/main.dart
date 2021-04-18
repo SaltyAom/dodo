@@ -5,6 +5,8 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import 'package:graphql_flutter/graphql_flutter.dart';
+
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
@@ -14,6 +16,8 @@ import 'bloc/bloc.dart';
 
 import 'navigator.dart';
 
+import 'graphql/graphql.dart';
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
@@ -21,25 +25,30 @@ void main() async {
 
   await Hive.initFlutter();
 
-  Hive.registerAdapter(PersistedSettingAdapter());
+  Hive.registerAdapter(
+    PersistedSettingAdapter(),
+  );
 
   runApp(
-    MultiBlocProvider(
-      child: Dodo(),
-      providers: [
-        BlocProvider<ArticleBloc>(
-          create: (context) => ArticleBloc(),
-        ),
-        BlocProvider<DrawerBloc>(
-          create: (context) => DrawerBloc(),
-        ),
-        BlocProvider<NavigatorBloc>(
-          create: (context) => NavigatorBloc(),
-        ),
-        BlocProvider<SettingsBloc>(
-          create: (context) => SettingsBloc(),
-        ),
-      ],
+    GraphQLProvider(
+      client: flutterClient,
+      child: MultiBlocProvider(
+        child: Dodo(),
+        providers: [
+          BlocProvider<ArticleBloc>(
+            create: (context) => ArticleBloc(),
+          ),
+          BlocProvider<DrawerBloc>(
+            create: (context) => DrawerBloc(),
+          ),
+          BlocProvider<NavigatorBloc>(
+            create: (context) => NavigatorBloc(),
+          ),
+          BlocProvider<SettingsBloc>(
+            create: (context) => SettingsBloc(),
+          ),
+        ],
+      ),
     ),
   );
 }

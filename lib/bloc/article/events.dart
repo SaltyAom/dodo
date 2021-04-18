@@ -48,10 +48,6 @@ class ArticleFetchHeadline extends ArticleEvent {
   }
 
   Future<ArticleModel> fetch(ArticleModel model) async {
-    await Future.delayed(
-      Duration(milliseconds: 500),
-    );
-
     switch (headline) {
       case ArticleHeadlineType.Trending:
         final trendings = await getTrendings();
